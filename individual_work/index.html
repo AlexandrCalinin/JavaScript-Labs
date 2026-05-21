@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MyShelf — личная электронная библиотека книг на Vanilla JS">
+    <title>MyShelf — Личная библиотека</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <span class="brand-logo" aria-hidden="true">📚</span>
+                <div>
+                    <h1 class="brand-title">MyShelf</h1>
+                    <p class="brand-subtitle">Личная библиотека книг</p>
+                </div>
+            </div>
+            <button id="theme-toggle" class="btn btn-ghost" type="button" aria-label="Переключить тему">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container app-main">
+        <nav class="tabs" role="tablist" aria-label="Разделы приложения">
+            <button class="tab-btn is-active" role="tab" data-tab="library" aria-selected="true">Библиотека</button>
+            <button class="tab-btn" role="tab" data-tab="add" aria-selected="false">Добавить книгу</button>
+            <button class="tab-btn" role="tab" data-tab="search" aria-selected="false">Поиск онлайн</button>
+            <button class="tab-btn" role="tab" data-tab="stats" aria-selected="false">Статистика</button>
+        </nav>
+
+        <section id="tab-library" class="tab-panel is-active" role="tabpanel">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <label class="field" for="search-input">
+                        <span class="field-label">Поиск</span>
+                        <input id="search-input" type="search" placeholder="Название или автор..." class="input">
+                    </label>
+                </div>
+                <div class="toolbar-group">
+                    <label class="field" for="filter-genre">
+                        <span class="field-label">Жанр</span>
+                        <select id="filter-genre" class="input">
+                            <option value="">Все жанры</option>
+                        </select>
+                    </label>
+                    <label class="field" for="filter-status">
+                        <span class="field-label">Статус</span>
+                        <select id="filter-status" class="input">
+                            <option value="">Все статусы</option>
+                            <option value="want">Хочу прочесть</option>
+                            <option value="reading">Читаю</option>
+                            <option value="done">Прочитано</option>
+                        </select>
+                    </label>
+                    <label class="field" for="sort-by">
+                        <span class="field-label">Сортировка</span>
+                        <select id="sort-by" class="input">
+                            <option value="custom">Вручную (drag&drop)</option>
+                            <option value="title">По названию</option>
+                            <option value="author">По автору</option>
+                            <option value="year-desc">По году (новые)</option>
+                            <option value="year-asc">По году (старые)</option>
+                            <option value="rating-desc">По рейтингу</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="counter-bar">
+                <span id="book-counter">Книг в библиотеке: 0</span>
+                <button id="reset-filters" type="button" class="btn btn-ghost btn-sm">Сбросить фильтры</button>
+            </div>
+
+            <ul id="book-list" class="book-grid" aria-live="polite"></ul>
+
+            <p id="empty-state" class="empty-state hidden">
+                Пока что полки пусты. Добавьте первую книгу через вкладку «Добавить книгу».
+            </p>
+        </section>
+
+        <section id="tab-add" class="tab-panel" role="tabpanel">
+            <form id="book-form" class="card form-card" novalidate>
+                <h2 class="card-title">Новая книга</h2>
+                <input type="hidden" id="book-id" value="">
+
+                <div class="form-grid">
+                    <label class="field">
+                        <span class="field-label">Название *</span>
+                        <input id="f-title" type="text" class="input" required maxlength="120">
+                        <small class="field-error" data-for="f-title"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Автор *</span>
+                        <input id="f-author" type="text" class="input" required maxlength="80">
+                        <small class="field-error" data-for="f-author"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Год издания *</span>
+                        <input id="f-year" type="number" class="input" required min="1" max="2100">
+                        <small class="field-error" data-for="f-year"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Жанр *</span>
+                        <input id="f-genre" type="text" class="input" list="genre-suggestions" required maxlength="40">
+                        <datalist id="genre-suggestions">
+                            <option value="Фантастика"></option>
+                            <option value="Фэнтези"></option>
+                            <option value="Детектив"></option>
+                            <option value="Программирование"></option>
+                            <option value="Биография"></option>
+                            <option value="Психология"></option>
+                            <option value="Роман"></option>
+                            <option value="Научпоп"></option>
+                        </datalist>
+                        <small class="field-error" data-for="f-genre"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Рейтинг (1—5) *</span>
+                        <input id="f-rating" type="number" class="input" required min="1" max="5" step="1">
+                        <small class="field-error" data-for="f-rating"></small>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Статус *</span>
+                        <select id="f-status" class="input" required>
+                            <option value="want">Хочу прочесть</option>
+                            <option value="reading">Читаю</option>
+                            <option value="done">Прочитано</option>
+                        </select>
+                        <small class="field-error" data-for="f-status"></small>
+                    </label>
+
+                    <label class="field field-full">
+                        <span class="field-label">Обложка (URL, опционально)</span>
+                        <input id="f-cover" type="url" class="input" placeholder="https://...">
+                        <small class="field-error" data-for="f-cover"></small>
+                    </label>
+
+                    <label class="field field-full">
+                        <span class="field-label">Заметка</span>
+                        <textarea id="f-note" class="input" rows="3" maxlength="500"></textarea>
+                        <small class="field-hint">До 500 символов</small>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button id="form-submit" type="submit" class="btn btn-primary">Сохранить</button>
+                    <button id="form-reset" type="reset" class="btn btn-ghost">Очистить</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="tab-search" class="tab-panel" role="tabpanel">
+            <div class="card">
+                <h2 class="card-title">Поиск книг в Open Library</h2>
+                <p class="card-text">
+                    Найдите книгу в открытом каталоге Open Library и добавьте её в свою библиотеку одним кликом.
+                </p>
+                <form id="api-search-form" class="api-search">
+                    <input id="api-query" type="search" class="input" placeholder="Например: Master and Margarita" required>
+                    <button type="submit" class="btn btn-primary">Искать</button>
+                </form>
+                <div id="api-status" class="api-status" aria-live="polite"></div>
+                <ul id="api-results" class="api-results"></ul>
+            </div>
+        </section>
+
+        <section id="tab-stats" class="tab-panel" role="tabpanel">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Всего книг</span>
+                    <span id="stat-total" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Прочитано</span>
+                    <span id="stat-done" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Сейчас читаю</span>
+                    <span id="stat-reading" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">В планах</span>
+                    <span id="stat-want" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Средний рейтинг</span>
+                    <span id="stat-avg" class="stat-value">—</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Распределение по жанрам</h2>
+                <div id="genre-chart" class="genre-chart"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-content" role="document">
+            <button class="modal-close" type="button" data-modal-close aria-label="Закрыть">×</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <div id="toast-host" class="toast-host" aria-live="polite"></div>
+
+    <footer class="app-footer">
+        <div class="container">
+            <p>MyShelf · Индивидуальный проект по JavaScript · 2026</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
