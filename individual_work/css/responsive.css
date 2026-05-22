@@ -1,0 +1,91 @@
+@media (max-width: 768px) {
+    .header-inner {
+        flex-wrap: wrap;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .toolbar {
+        flex-direction: column;
+    }
+
+    .toolbar-group {
+        flex-direction: column;
+    }
+
+    .toolbar-group .field {
+        min-width: 0;
+    }
+
+    .modal-content {
+        padding: 1.25rem;
+    }
+
+    .modal-body-cover {
+        float: none;
+        margin: 0 auto 1rem;
+        display: block;
+    }
+
+    .chart-row {
+        grid-template-columns: 100px 1fr 32px;
+        font-size: 0.85rem;
+    }
+
+    .stat-value {
+        font-size: 1.6rem;
+    }
+
+    .tabs {
+        margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .toast-host {
+        right: 0.75rem;
+        left: 0.75rem;
+        bottom: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    .brand-title {
+        font-size: 1.15rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .api-search {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+    }
+}
